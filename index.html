@@ -1,9 +1,286 @@
 <!doctype html>
 <html>
   <head>
-    <title>CondVLN!</title>
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="CondVLN programmatically generates instructions whose branch conditions are grounded in verifiable 3D scene-graph predicates, with controlled variation in branch depth, dependency chain length, spatial composition, evidence observability, and instruction horizon."
+    />
+    <meta name="keywords" content="CondVLN, Navigation, Benchmark" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      If, Then, Otherwise: Diagnosing Conditional Branching in Vision-Language
+      Navigation
+    </title>
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./static/css/bulma.min.css" />
+    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css" />
+    <link rel="stylesheet" href="./static/css/bulma-slider.min.css" />
+    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css"
+    />
+    <link rel="stylesheet" href="./static/css/index.css" />
+    <link rel="icon" href="./static/images/favicon.png" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="./static/js/fontawesome.all.min.js"></script>
+    <script src="./static/js/bulma-carousel.min.js"></script>
+    <script src="./static/js/bulma-slider.min.js"></script>
+    <script src="./static/js/index.js"></script>
   </head>
   <body>
-    <p>Coming Soon...</p>
+    <section class="hero">
+      <div class="hero-body">
+        <div class="container is-max-desktop">
+          <div class="columns is-centered">
+            <div class="column has-text-centered">
+              <h1 class="title is-1 publication-title">
+                If, Then, Otherwise: Diagnosing Conditional Branching in
+                Vision-Language Navigation
+              </h1>
+              <!-- <h2 class="title publication-title">The CondVLN Benchmark</h2> -->
+              <div class="is-size-5 publication-authors">
+                <!-- <span class="author-block">
+              <a href="some link">First Last</a><sup>1</sup>,</span>
+            <span class="author-block"> -->
+              </div>
+
+              <!-- <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Institution 1,</span>
+            <span class="author-block"><sup>2</sup>Institution 2</span>
+          </div> -->
+
+              <div class="column has-text-centered">
+                <div class="publication-links">
+                  <span class="link-block">
+                    <a
+                      href="https://anonymous.4open.science/r/condvln_bench/README.md"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="fab fa-github"></i>
+                      </span>
+                      <span>Code</span>
+                    </a>
+                  </span>
+                </div>
+              </div>
+
+              <!-- <div class="column has-text-centered">
+            <div class="publication-links">
+              
+              <span class="link-block">
+                <a href="https://arxiv.org/pdf/2011.12948"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2011.12948"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              
+              <span class="link-block">
+                <a href="https://www.youtube.com/watch?v=MrKrnHhk8IA"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span>
+              
+              <span class="link-block">
+                <a href="https://github.com/google/nerfies"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              
+              <span class="link-block">
+                <a href="https://github.com/google/nerfies/releases/tag/0.1"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a>
+            </div>
+
+          </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero is-light">
+      <div class="container is-max-desktop">
+        <!-- Abstract. -->
+        <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths">
+            <h2 class="title is-3"><br />Abstract</h2>
+            <div class="content has-text-justified">
+              <p>
+                Vision-language navigation agents are typically evaluated on
+                their ability to follow route-like instructions toward a fixed
+                goal. Real navigation instructions, however, often depend on the
+                observed state of the environment: <b>if</b> a condition holds,
+                <b>then</b> follow one path, <b>otherwise</b> take another. Such
+                instructions require an agent to evaluate scene evidence, select
+                the correct logical branch, and execute the corresponding
+                navigation behavior. Existing evaluations provide limited
+                control over conditional branch execution, making it difficult
+                to determine whether agents fail because of perception,
+                grounding, navigation, or logical decision-making.
+              </p>
+              <p>
+                We introduce CondVLN, a scene-graph-grounded benchmark for
+                diagnosing conditional branching in vision-language navigation.
+                CondVLN programmatically generates instructions whose branch
+                conditions are grounded in verifiable 3D scene-graph predicates,
+                with controlled variation in branch depth, dependency chain
+                length, spatial composition, evidence observability, and
+                instruction horizon. The current instantiation contains over
+                2,000 generated conditional instructions across AI2-THOR,
+                Matterport3D, Gibson, and ReplicaCAD, and evaluates agents using
+                both standard VLN metrics and branch-specific diagnostics:
+                Branch Selection Accuracy and Conditional Success Rate.
+              </p>
+              <p>
+                Evaluating five recent VLN agents, including VLN-Zero, NaVid,
+                NaVILA, and Open-Nav, shows that conditional branching exposes
+                failures that are not captured by standard success rate or path
+                length alone: agents can navigate plausibly while committing to
+                a branch inconsistent with the observed scene condition.
+                Finally, we present a lightweight neurosymbolic branch-selection
+                layer that separates condition grounding from navigation
+                execution, improving Conditional Success Rate and Branch
+                Selection Accuracy by 12% and 15% each under controlled
+                information access. CondVLN provides a reusable testbed for
+                measuring whether embodied agents can not only follow
+                instructions, but follow the right instruction under the right
+                condition.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!--/ Abstract. -->
+
+        <!-- Paper video. -->
+        <!-- <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <iframe src="https://www.youtube.com/embed/MrKrnHhk8IA?rel=0&amp;showinfo=0"
+                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div> -->
+        <!--/ Paper video. -->
+      </div>
+    </section>
+
+    <section class="hero is-light">
+      <div class="container is-max-desktop">
+        <!-- Concurrent Work. -->
+        <div class="columns is-centered has-text-centered">
+          <div class="column is-full-width">
+            <h2 class="title is-3"><br />Framework Overview</h2>
+            <div class="content has-text-justified">
+              <img src="./static/images/pipeline.jpg" />
+
+              <p>
+                Overview of CondVLN. CondVLN features a programmatic benchmark
+                generation pipeline for evaluating neurosymbolic reasoning in
+                vision-language navigation, where agents must combine
+                semantic-spatial grounding in embodied environments with
+                symbolic reasoning over explicit logical and conditional
+                structures. The pipeline consists of two parts: dataset
+                generation and evaluation.
+              </p>
+              <br />
+            </div>
+          </div>
+        </div>
+        <!--/ Concurrent Work. -->
+      </div>
+    </section>
+
+    <!-- <section class="hero teaser">
+      <div class="container is-max-desktop">
+        <div class="hero-body">
+          <video
+            id="teaser"
+            autoplay
+            controls
+            muted
+            loop
+            playsinline
+            height="100%"
+          >
+            <source
+              src="./static/videos/framework-video.mp4"
+              type="video/mp4"
+            />
+          </video>
+        </div>
+      </div>
+    </section> -->
+
+    <!--
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>bibtex will go here</code></pre>
+  </div>
+</section> -->
+
+    <footer class="footer">
+      <div class="container">
+        <!--
+    <div class="content has-text-centered">
+      <a class="icon-link"
+         href="./static/videos/nerfies_paper.pdf">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a class="icon-link" href="https://github.com/keunhong" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+      -->
+        <div class="columns is-centered">
+          <div class="column is-8">
+            <div class="content bottom-attr-text">
+              <p style="font-size: 0.85rem">
+                We express our thanks towards the authors of
+                <a href="https://github.com/nerfies/nerfies.github.io"
+                  >Nerfies</a
+                >
+                for the template of this website.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>
