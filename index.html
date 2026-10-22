@@ -24,6 +24,7 @@
   <style>
     .publication-title i { font-style: italic; }
     .traj-media { display: block; width: 100%; height: 680px; object-fit: contain; background: white; }   /* every episode in the same 680 px box; the tall one (S3) is letterboxed instead of stretching the page */
+    @media (max-width: 768px) { .traj-media { height: auto; max-height: 72vh; } .traj-slide .figure-caption { margin-top: 0.3rem; } }   /* phones: no fixed box, so no empty bands above and below the video */
     .publication-links .link-block { display: inline-block; margin: 0.3rem 0.35rem; }
     .agent-text p.stage { margin: 0.35rem 0; padding-left: 2em; text-indent: -2em; } .agent-text p.oracles { margin-top: 1.1rem; }
     .stp { display: inline-block; width: 1.45em; height: 1.45em; border-radius: 50%; background: #F2666D; color: #fff; font-weight: 700; font-size: 0.82em; line-height: 1.45em; text-align: center; margin-right: 0.45em; text-indent: 0; }   /* the figure's coral stage badges */
