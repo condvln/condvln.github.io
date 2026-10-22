@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="CondVLN: a scene-graph-grounded benchmark and controlled testbed for conditional instruction following in vision-language navigation.">
+  <meta name="keywords" content="CondVLN, vision-language navigation, conditional instructions, benchmark">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>If, Then, Otherwise: Diagnosing Conditional Branching in Vision-Language Navigation</title>
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+  <link rel="icon" type="image/png" sizes="256x256" href="static/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="static/images/favicon-32.png">
+  <link rel="apple-touch-icon" href="static/images/favicon.png">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script src="static/js/bulma-carousel.min.js"></script>
+  <script src="static/js/bulma-slider.min.js"></script>
+  <script src="static/js/index.js"></script>
+  <style>
+    .publication-title i { font-style: italic; }
+    .traj-media { display: block; width: 100%; height: 680px; object-fit: contain; background: white; }   /* every episode in the same 680 px box; the tall one (S3) is letterboxed instead of stretching the page */
+    .figure-caption { font-size: 0.95rem; color: #4a4a4a; margin-top: 0.6rem; text-align: left; }
+    .results-carousel .item { margin: 0 1rem; }
+    .maroon { color: #9B1C1C; font-weight: 600; }
+    .stat-row .column { min-width: 9rem; } .stat-number { font-size: 2.2rem; font-weight: 700; color: #363636; font-family: "Google Sans", "Noto Sans", sans-serif; line-height: 1.1; } .stat-label { font-size: 0.9rem; color: #6a6a6a; }
+    .stat-grid .column { display: flex; } .chart-card { background: #fafafa; border-radius: 8px; padding: 0.7rem 0.9rem 0.6rem; width: 100%; display: flex; flex-direction: column; } .chart-title { font-size: 0.9rem; font-weight: 600; color: #4a4a4a; margin-bottom: 0.3rem; }
+    .chart-box { position: relative; height: 240px; } .table-card { justify-content: flex-start; } .table-card img { margin: auto 0; } .chart-note { font-size: 0.8rem; color: #6a6a6a; margin-top: 0.4rem; }
+    .traj-slide { display: none; } .traj-slide.active { display: block; }
+    .traj-dot { width: 0.7rem; height: 0.7rem; border-radius: 50%; background: #ccc; cursor: pointer; display: inline-block; } .traj-dot.active { background: #555; }
+  </style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title"><i>If, Then, Otherwise:</i><br>Diagnosing Conditional Branching in Vision-Language Navigation</h1>
+          <div class="is-size-5 publication-authors"><span class="author-block">Seoyoung Lee<sup>1</sup></span>, <span class="author-block">Neel P. Bhatt<sup>1</sup></span>, <span class="author-block">Pranay Samineni<sup>1</sup></span>, <span class="author-block">Cong Liu<sup>2</sup></span>, <span class="author-block">SP Sharan<sup>1</sup></span>, <span class="author-block">Timothy Barclay<sup>2</sup></span>, <span class="author-block">Gregory M. Wagner<sup>2</sup></span>, <span class="author-block">Daniel Milan<sup>1</sup></span>, <span class="author-block">Sandeep Chinchali<sup>1</sup></span>, <span class="author-block">Ufuk Topcu<sup>1</sup></span>, <span class="author-block">Atlas Wang<sup>1</sup></span></div><div class="is-size-5 publication-authors"><span class="author-block"><sup>1</sup>The University of Texas at Austin</span> &nbsp; <span class="author-block"><sup>2</sup>Collins Aerospace</span></div>
+          <div class="column has-text-centered">
+            <div class="publication-links"><span class="link-block"><a href="static/paper.pdf" class="external-link button is-normal is-rounded is-dark"><span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span></a></span><span class="link-block"><a href="#" class="external-link button is-normal is-rounded is-dark"><span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span></a></span><span class="link-block"><a href="https://anonymous.4open.science/r/condvln_bench/README.md" class="external-link button is-normal is-rounded is-dark"><span class="icon"><i class="fab fa-github"></i></span><span>Code</span></a></span><span class="link-block"><a href="https://anonymous.4open.science/r/condvln_bench/CondVLN_dataset" class="external-link button is-normal is-rounded is-dark"><span class="icon"><i class="fas fa-database"></i></span><span>Dataset</span></a></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video autoplay loop muted playsinline style="width:100%"><source src="static/videos/fig3.mp4" type="video/mp4"></video>
+      <h2 class="subtitle has-text-centered" style="margin-top:0.8rem">
+        A conditional instruction names a goal only after its conditions are checked. <span class="has-text-weight-semibold">CondVLN</span> measures whether an agent takes the branch the scene supports, not only whether it reaches a goal.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified"><p>Vision-language navigation agents are typically evaluated on their ability to follow route-like instructions toward a fixed goal. Real navigation instructions, however, often depend on the observed state of the environment: <b>if</b> a condition holds, <b>then</b> follow one path, <b>otherwise</b> take another. Existing evaluations provide limited control over conditional branch execution, making it difficult to determine whether agents fail because of perception, grounding, navigation, or logical decision-making. We introduce CondVLN, a scene-graph-grounded benchmark and controlled testbed for conditional instruction following in vision-language navigation. CondVLN programmatically generates instructions whose branch conditions are grounded in verifiable 3D scene-graph predicates, with controlled variation in branch depth, dependency chain length, spatial composition, evidence observability, and instruction horizon. Our dataset holds 19,952 generated instructions across 34K objects and 1.88M spatial relationships in AI2-THOR, Matterport3D, Gibson, and ReplicaCAD, with 1,998 verified evaluation episodes, scored by standard VLN metrics and two branch diagnostics, Branch Selection Accuracy and Conditional Success Rate. Seven VLN agents (NaVid, NaVILA, CA-Nav, Open-Nav, VLN-Zero, StreamVLN, SNav-7B) reach a named object in a few percent of episodes, and most of their successes on branching episodes bypass the required branch, a failure that success rate and path length do not show. A neurosymbolic agent that checks each condition explicitly follows the correct branch on significantly more episodes, showing what condition following buys. Ablations on identical episodes show that the remaining potential performance gain is in acquiring the necessary evidence, not in choosing the correct branch.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Benchmark</h2>
+    <img src="static/images/fig1_framework.png" alt="CondVLN framework" style="width:100%">
+    <p class="figure-caption">Instructions are generated from 3D scene graphs: every condition is a scene-graph predicate whose truth is known by construction, conditions decide the destination, and they are composed through controlled nesting depth and chain length. Agents receive camera observations and the instruction text only. Branch Selection Accuracy (BSA) credits the condition objects an agent reaches in the order the instruction checks them; Conditional Success Rate (CSR) requires the goal and the full branch.</p>
+  </div>
+</section>
+
+<section class="section" id="stats">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Benchmark statistics</h2>
+    <div class="columns is-multiline is-mobile stat-row"><div class="column has-text-centered"><p class="stat-number" data-target="19,952">0</p><p class="stat-label">generated instructions</p></div><div class="column has-text-centered"><p class="stat-number" data-target="1,998">0</p><p class="stat-label">verified episodes</p></div><div class="column has-text-centered"><p class="stat-number" data-target="34,062">0</p><p class="stat-label">objects</p></div><div class="column has-text-centered"><p class="stat-number" data-target="1.88M">0</p><p class="stat-label">spatial relations</p></div><div class="column has-text-centered"><p class="stat-number" data-target="371">0</p><p class="stat-label">scenes</p></div><div class="column has-text-centered"><p class="stat-number" data-target="6">0</p><p class="stat-label">complexity categories</p></div></div>
+    <div class="columns is-multiline stat-grid" style="margin-top:1rem">
+      <div class="column is-half"><div class="chart-card table-card"><p class="chart-title">Benchmark statistics (Table 2 of the paper)</p><img src="static/images/table2_stats.png" alt="Benchmark statistics table" style="width:100%"></div></div>
+      <div class="column is-half"><div class="chart-card"><p class="chart-title">Scene-graph size per environment</p><div class="chart-box"><canvas id="chart-graph"></canvas></div></div></div>
+      <div class="column is-half"><div class="chart-card"><p class="chart-title">Instructions and verified episodes per environment</p><div class="chart-box"><canvas id="chart-episodes"></canvas></div></div></div>
+      <div class="column is-half"><div class="chart-card"><p class="chart-title">Mean reference path length (m)</p><div class="chart-box"><canvas id="chart-path"></canvas></div></div></div>
+    </div>
+    <p class="content has-text-centered" style="max-width:900px;margin:1rem auto 0">Instructions follow six templates that vary nesting depth (1 to 3) and chain length (1 to 3 branches): simple, nested, deep nested, chain, long chain, nested chain. The verified evaluation sets are balanced across the six categories, and about two thirds of the episodes carry subgoals (condition objects the branch must visit).</p>
+  </div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  var S = {'envs': ['ReplicaCAD', 'AI2-THOR', 'Gibson', 'MP3D'], 'scenes': [91, 85, 105, 90], 'objects': [2293, 4003, 7487, 20279], 'categories': [41, 127, 55, 146], 'relations': [255529, 560219, 146685, 918059], 'instructions': [3549, 5100, 6283, 5020], 'episodes': [500, 500, 499, 499], 'path_m': [10.0, 9.9, 22.5, 33.5], 'subgoal_pct': [66, 69, 67, 66]};
+  var palette = ["#F2A541", "#12B886", "#2F80ED", "#7C5CE6"];
+  function bar(id, datasets, opts) {
+    var ctx = document.getElementById(id); if (!ctx || !window.Chart) return null;
+    return new Chart(ctx, { type: "bar", data: { labels: S.envs, datasets: datasets }, options: Object.assign({
+      responsive: true, maintainAspectRatio: false, animation: { duration: 1400, easing: "easeOutQuart" }, plugins: { legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 } } } },
+      scales: { y: { beginAtZero: true, ticks: { font: { size: 10 }, callback: function (v) { return v >= 1000000 ? (v / 1000000) + "M" : v >= 1000 ? (v / 1000) + "k" : v; } } }, x: { ticks: { font: { size: 11 } } } }
+    }, opts || {}) });
+  }
+  var started = false;
+  function startCharts() {
+    if (started) return; started = true;
+    bar("chart-graph", [ { label: "objects", data: S.objects, backgroundColor: palette[1] }, { label: "spatial relations", data: S.relations, backgroundColor: palette[3], yAxisID: "y2" } ],
+        { scales: { y: { beginAtZero: true, position: "left", title: { display: true, text: "objects", font: { size: 10 } }, ticks: { font: { size: 10 }, callback: function (v) { return v >= 1000 ? (v / 1000) + "k" : v; } } },
+                      y2: { beginAtZero: true, position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "relations", font: { size: 10 } }, ticks: { font: { size: 10 }, callback: function (v) { return v >= 1000000 ? (v / 1000000) + "M" : (v / 1000) + "k"; } } } } });
+    bar("chart-episodes", [ { label: "generated instructions", data: S.instructions, backgroundColor: palette[0] }, { label: "verified episodes", data: S.episodes, backgroundColor: palette[2] } ]);
+    bar("chart-path", [ { label: "mean reference path (m)", data: S.path_m, backgroundColor: palette[3] } ], { plugins: { legend: { display: false } } });
+    document.querySelectorAll(".stat-number").forEach(function (el) {
+      var target = el.getAttribute("data-target"), m = target.match(/^([\d.,]+)(M?)$/); if (!m) { el.textContent = target; return; }
+      var num = parseFloat(m[1].replace(/,/g, "")), suffix = m[2], dec = (m[1].split(".")[1] || "").length, t0 = null;
+      function step(ts) { if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / 1600); var e = 1 - Math.pow(1 - p, 3); var v = num * e;
+        el.textContent = (dec ? v.toFixed(dec) : Math.round(v).toLocaleString("en-US")) + suffix; if (p < 1) requestAnimationFrame(step); else el.textContent = target; }
+      requestAnimationFrame(step);
+    });
+  }
+  var sec = document.getElementById("stats");
+  if ("IntersectionObserver" in window) { new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) startCharts(); }); }, { threshold: 0.25 }).observe(sec); } else startCharts();
+})();
+</script>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Neurosymbolic reference agent</h2>
+    <div class="columns is-centered">
+      <div class="column is-three-fifths"><video autoplay loop muted playsinline poster="static/images/fig2_agent.png" style="width:100%"><source src="static/videos/fig2_agent.mp4" type="video/mp4"><img src="static/gifs/fig2_agent.gif" alt="Neurosymbolic agent" style="width:100%"></video></div>
+      <div class="column is-two-fifths content has-text-justified">
+        <p>The agent parses the instruction into an if/then/else program, resolves one condition at a time with a search-and-verify loop (sweep in place, detect, lift detections into a 3D memory, explore frontiers under a budget), and executes the chosen action. An exhausted budget declares a condition false. Three oracles (resolved branch, condition truths in words, perfect perception) remove one source of difficulty each, so the ablations attribute the remaining cost to evidence acquisition rather than to branch logic.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container" style="max-width: 1400px">
+    <h2 class="title is-3 has-text-centered">Trajectories of every agent</h2>
+    <p class="content has-text-centered" style="max-width:900px;margin:0 auto 1rem">One panel per agent; paths are drawn from start (orange) to end (purple) as the episodes play. Numbered badges mark the condition objects in check order, the target marks the goal, a tick marks a condition the agent verified in place, faded icons are the branches not taken, and a <span class="maroon">maroon</span> condition count flags a success that checked nothing.</p>
+    <div id="traj-viewer">
+      <div class="gif-gallery-nav"><button id="traj-prev" aria-label="Previous episode">&#8592;</button><span id="traj-label">Episode 1 of 4</span><button id="traj-next" aria-label="Next episode">&#8594;</button></div>
+      <div class="traj-slide" data-index="0"><video autoplay loop muted playsinline preload="metadata" class="traj-media"><source src="static/videos/S1_ai2thor343.mp4" type="video/mp4"></video><p class="figure-caption">AI2-THOR, nested instruction (Figure 3 top, Figure S1). Both conditions hold; only the neurosymbolic agent checks the dining table and the refrigerator before heading to the alarm clock.</p></div><div class="traj-slide" data-index="1"><video autoplay loop muted playsinline preload="metadata" class="traj-media"><source src="static/videos/S2_gibson407.mp4" type="video/mp4"></video><p class="figure-caption">Gibson house, nested instruction (Figure 3 bottom, Figure S2). The toilet lies 1.4 m from the start: NaVILA, CA-Nav and StreamVLN are counted as successes without approaching the television or the book (maroon counts); the neurosymbolic agent walks to the bedroom, verifies both, and returns.</p></div><div class="traj-slide" data-index="2"><video autoplay loop muted playsinline preload="metadata" class="traj-media"><source src="static/videos/S3_gibson38.mp4" type="video/mp4"></video><p class="figure-caption">Gibson house, chain instruction (Figure S3). The first condition is a spatial relation (a toilet north-east of and above a cup); only the neurosymbolic agent completes the branch.</p></div><div class="traj-slide" data-index="3"><video autoplay loop muted playsinline preload="metadata" class="traj-media"><source src="static/videos/S4_ai2thor354.mp4" type="video/mp4"></video><p class="figure-caption">AI2-THOR, nested instruction (Figure S4). The two condition objects share one spot; no baseline approaches them or the goal.</p></div>
+      <div class="gif-gallery-dots"><span class="traj-dot active" data-dot="0"></span><span class="traj-dot" data-dot="1"></span><span class="traj-dot" data-dot="2"></span><span class="traj-dot" data-dot="3"></span></div>
+    </div>
+    <script>
+    (function () {
+      var n = 4, cur = 0, slides = document.querySelectorAll(".traj-slide"), dots = document.querySelectorAll(".traj-dot"), label = document.getElementById("traj-label");
+      function show(i) { slides[cur].classList.remove("active"); dots[cur].classList.remove("active"); cur = (i + n) % n; slides[cur].classList.add("active"); dots[cur].classList.add("active"); label.textContent = "Episode " + (cur + 1) + " of " + n; var v = slides[cur].querySelector("video"); if (v) { v.currentTime = 0; v.play(); } }
+      document.getElementById("traj-prev").addEventListener("click", function () { show(cur - 1); });
+      document.getElementById("traj-next").addEventListener("click", function () { show(cur + 1); });
+      dots.forEach(function (d) { d.addEventListener("click", function () { show(parseInt(d.getAttribute("data-dot"))); }); });
+      show(0);
+    })();
+    </script>
+  </div>
+</section>
+
+<section class="section" id="gif-gallery-section">
+  <div class="container" style="max-width: 1400px">
+    <h2 class="title is-3 has-text-centered">Dataset examples</h2>
+    <p class="content has-text-centered" style="max-width:900px;margin:0 auto 1rem">One episode per instruction category in each environment: the neurosymbolic agent's camera view (left) next to its path on the floor plan (right), drawn with the conventions of Figure 3 (orange to purple = start to end, badges = condition objects in check order, target = goal, faded = branches not taken). Use the arrows, the dots, or the keyboard to switch environment.</p>
+    <div id="gif-gallery">
+      <div class="gif-gallery-nav"><button id="gallery-prev" aria-label="Previous environment">&#8592;</button><span id="gallery-label">AI2-THOR</span><button id="gallery-next" aria-label="Next environment">&#8594;</button></div>
+      <div id="gallery-slides-wrapper"><div class="gallery-slide" data-index="0"><div class="gif-grid"><div class="gif-cell"><p class="gif-label">Simple conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/ai2thor_simple_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Nested conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/ai2thor_nested_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Deep nested conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/ai2thor_deep_nested_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Chain conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/ai2thor_chain_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Long chain conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/ai2thor_long_chain_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Nested chain conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/ai2thor_nested_chain_conditional.mp4" type="video/mp4"></video></div></div></div><div class="gallery-slide" data-index="1"><div class="gif-grid"><div class="gif-cell"><p class="gif-label">Simple conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/gibson_simple_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Nested conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/gibson_nested_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Deep nested conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/gibson_deep_nested_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Chain conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/gibson_chain_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Long chain conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/gibson_long_chain_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Nested chain conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/gibson_nested_chain_conditional.mp4" type="video/mp4"></video></div></div></div><div class="gallery-slide" data-index="2"><div class="gif-grid"><div class="gif-cell"><p class="gif-label">Simple conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/mp3d_simple_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Nested conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/mp3d_nested_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Deep nested conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/mp3d_deep_nested_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Chain conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/mp3d_chain_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Long chain conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/mp3d_long_chain_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Nested chain conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/mp3d_nested_chain_conditional.mp4" type="video/mp4"></video></div></div></div><div class="gallery-slide" data-index="3"><div class="gif-grid"><div class="gif-cell"><p class="gif-label">Simple conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/replicacad_simple_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Nested conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/replicacad_nested_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Deep nested conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/replicacad_deep_nested_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Chain conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/replicacad_chain_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Long chain conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/replicacad_long_chain_conditional.mp4" type="video/mp4"></video></div><div class="gif-cell"><p class="gif-label">Nested chain conditional</p><video autoplay loop muted playsinline preload="metadata" style="width:100%"><source src="static/videos/gallery/replicacad_nested_chain_conditional.mp4" type="video/mp4"></video></div></div></div></div>
+      <div class="gif-gallery-dots"><span class="gallery-dot active" data-dot="0"></span><span class="gallery-dot" data-dot="1"></span><span class="gallery-dot" data-dot="2"></span><span class="gallery-dot" data-dot="3"></span></div>
+    </div>
+  </div>
+</section>
+<style>
+  #gif-gallery { user-select: none; }
+  .gif-gallery-nav { display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin-bottom: 1rem; }
+  .gif-gallery-nav button { background: none; border: 1px solid #aaa; border-radius: 4px; font-size: 1.3rem; width: 2.4rem; height: 2.4rem; cursor: pointer; color: #333; line-height: 1; }
+  .gif-gallery-nav button:hover { background: #eee; }
+  #gallery-label { font-size: 1.25rem; font-weight: 600; min-width: 9rem; text-align: center; }
+  .gallery-slide { display: none; } .gallery-slide.active { display: block; }
+  .gif-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem 1.5rem; }
+  @media (max-width: 900px) { .gif-grid { grid-template-columns: 1fr; } }
+  .gif-cell img { width: 100%; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.12); }
+  .gif-label { font-weight: 600; margin: 0 0 0.4rem 0; }
+  .gif-gallery-dots { display: flex; justify-content: center; gap: 0.6rem; margin-top: 1rem; }
+  .gallery-dot { width: 0.7rem; height: 0.7rem; border-radius: 50%; background: #ccc; cursor: pointer; } .gallery-dot.active { background: #555; }
+</style>
+<script>
+(function () {
+  var names = ["AI2-THOR", "Gibson", "Matterport3D", "ReplicaCAD"]; var current = 0;
+  var slides = document.querySelectorAll(".gallery-slide"), dots = document.querySelectorAll(".gallery-dot"), label = document.getElementById("gallery-label");
+  function show(i) { slides[current].classList.remove("active"); dots[current].classList.remove("active"); current = (i + names.length) % names.length; slides[current].classList.add("active"); dots[current].classList.add("active"); label.textContent = names[current]; }
+  document.getElementById("gallery-prev").addEventListener("click", function () { show(current - 1); });
+  document.getElementById("gallery-next").addEventListener("click", function () { show(current + 1); });
+  dots.forEach(function (d) { d.addEventListener("click", function () { show(parseInt(d.getAttribute("data-dot"))); }); });
+  document.addEventListener("keydown", function (e) { if (e.key === "ArrowLeft") show(current - 1); if (e.key === "ArrowRight") show(current + 1); });
+  show(0);
+})();
+</script>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Main results</h2>
+    <img src="static/images/table3_main_results.png" alt="Main results table" style="width:100%">
+    <p class="figure-caption">Table 3. Seven VLN agents reach the named object in a few percent of episodes, and most of their successes on branching episodes bypass the required branch. The neurosymbolic agent leads every column except SPL on the two real-scan environments.</p>
+    <div class="columns is-centered" style="margin-top:1.5rem"><div class="column is-three-fifths"><img src="static/images/table4_scaling.png" alt="Scaling analysis table" style="width:100%"><p class="figure-caption">Table 4. Branch selection accuracy and conditional success rate per complexity cell: the baselines show no trend over depth or chain length because they rarely reach the named target with either instruction, while the neurosymbolic agent keeps its BSA within a seven-point band as the logic deepens.</p></div></div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@inproceedings{lee2027condvln,
+  title     = {If, Then, Otherwise: Diagnosing Conditional Branching in Vision-Language Navigation},
+  author    = {Lee, Seoyoung and Bhatt, Neel P. and Samineni, Pranay and Liu, Cong and Sharan, SP and Barclay, Timothy and Wagner, Gregory M. and Milan, Daniel and Chinchali, Sandeep and Topcu, Ufuk and Wang, Atlas},
+  booktitle = {Under review},
+  year      = {2027}
+}</code></pre>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>This page uses the <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> template. Icons in the figures come from <a href="https://www.flaticon.com">Flaticon</a> and <a href="https://fontawesome.com">Font Awesome</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
