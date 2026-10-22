@@ -38,25 +38,30 @@
 </head>
 <body>
 <script>
-window.attachSwipe = function (box, getActive, onSwitch) {
-  var x0 = null, y0 = null, dx = 0, el = null, w = 0, horizontal = null, busy = false;
-  box.style.overflow = "hidden";
-  box.addEventListener("touchstart", function (e) { if (busy) return; x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; horizontal = null; el = getActive(); w = box.clientWidth; el.style.transition = "none"; }, { passive: true });
+window.attachSwipe = function (box, slidesFn, indexFn, onSwitch) {
+  // drag-following carousel: the current slide follows the finger and the neighbour slides in beside it; release past 18 % of the width switches
+  var x0 = null, y0 = null, dx = 0, w = 0, cur = null, nxt = null, dir = 0, horizontal = null, busy = false;
+  box.style.overflow = "hidden"; box.style.position = "relative";
+  function clear(el) { if (!el) return; el.style.transition = ""; el.style.transform = ""; el.style.opacity = ""; el.style.display = ""; el.style.position = ""; el.style.top = ""; el.style.left = ""; el.style.width = ""; }
+  function prep(d) {
+    clear(nxt); var slides = slidesFn(), n = slides.length; nxt = slides[(indexFn() + d + n) % n]; dir = d;
+    nxt.style.display = "block"; nxt.style.position = "absolute"; nxt.style.top = cur.offsetTop + "px"; nxt.style.left = "0"; nxt.style.width = "100%"; nxt.style.transition = "none"; nxt.style.transform = "translateX(" + (d > 0 ? w : -w) + "px)";
+    nxt.querySelectorAll("video[data-src]").forEach(function (v) { if (!v.getAttribute("src")) v.src = v.getAttribute("data-src"); v.play().catch(function () {}); });
+  }
+  function settle(el, tx, cb) { el.style.transition = "transform 0.25s ease-out"; el.style.transform = "translateX(" + tx + "px)"; if (cb) setTimeout(cb, 260); }
+  box.addEventListener("touchstart", function (e) { if (busy) return; x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; dir = 0; nxt = null; horizontal = null; cur = slidesFn()[indexFn()]; w = box.clientWidth; cur.style.transition = "none"; }, { passive: true });
   box.addEventListener("touchmove", function (e) {
     if (x0 === null || busy) return; var mx = e.touches[0].clientX - x0, my = e.touches[0].clientY - y0;
     if (horizontal === null && (Math.abs(mx) > 6 || Math.abs(my) > 6)) horizontal = Math.abs(mx) > Math.abs(my);
-    if (!horizontal) return; dx = mx; el.style.transform = "translateX(" + dx + "px)"; el.style.opacity = String(Math.max(0.4, 1 - Math.abs(dx) / w));
+    if (!horizontal || mx === 0) return; var d = mx < 0 ? 1 : -1; if (d !== dir) prep(d);
+    dx = mx; cur.style.transform = "translateX(" + dx + "px)"; nxt.style.transform = "translateX(" + ((dir > 0 ? w : -w) + dx) + "px)";
   }, { passive: true });
-  function settle(node, tx, op, cb) { node.style.transition = "transform 0.24s ease-out, opacity 0.24s ease-out"; node.style.transform = "translateX(" + tx + "px)"; node.style.opacity = String(op); setTimeout(cb, 250); }
   box.addEventListener("touchend", function () {
-    if (x0 === null || busy) return; x0 = null; var old = el; if (!horizontal) { old.style.transition = ""; old.style.transform = ""; old.style.opacity = ""; return; }
-    var dir = Math.abs(dx) > w * 0.18 ? (dx < 0 ? 1 : -1) : 0; busy = true;
-    if (dir === 0) { settle(old, 0, 1, function () { old.style.transition = ""; old.style.transform = ""; old.style.opacity = ""; busy = false; }); return; }
-    settle(old, dir > 0 ? -w : w, 0, function () {
-      old.style.transition = "none"; old.style.transform = ""; old.style.opacity = ""; onSwitch(dir); var nw = getActive();
-      nw.style.transition = "none"; nw.style.transform = "translateX(" + (dir > 0 ? w : -w) + "px)"; nw.style.opacity = "0.4";
-      requestAnimationFrame(function () { requestAnimationFrame(function () { settle(nw, 0, 1, function () { nw.style.transition = ""; nw.style.transform = ""; nw.style.opacity = ""; busy = false; }); }); });
-    });
+    if (x0 === null || busy) return; x0 = null; var c = cur, nx = nxt, d = dir;
+    if (!horizontal || !nx) { clear(c); clear(nx); return; }
+    busy = true;
+    if (Math.abs(dx) > w * 0.18) { settle(c, d > 0 ? -w : w); settle(nx, 0, function () { clear(c); clear(nx); onSwitch(d); busy = false; }); }
+    else { settle(c, 0); settle(nx, d > 0 ? w : -w, function () { clear(c); clear(nx); busy = false; }); }
   }, { passive: true });
 };
 </script>
@@ -191,7 +196,7 @@ window.attachSwipe = function (box, getActive, onSwitch) {
     (function () {
       var n = 4, cur = 0, slides = document.querySelectorAll(".traj-slide"), dots = document.querySelectorAll(".traj-dot"), label = document.getElementById("traj-label");
       function show(i) { var pv = slides[cur].querySelector("video"); if (pv) pv.pause(); slides[cur].classList.remove("active"); dots[cur].classList.remove("active"); cur = (i + n) % n; slides[cur].classList.add("active"); dots[cur].classList.add("active"); label.textContent = "Episode " + (cur + 1) + " of " + n; var v = slides[cur].querySelector("video"); if (v) { if (!v.getAttribute("src")) v.src = v.getAttribute("data-src"); v.currentTime = 0; v.play().catch(function () {}); } }
-      attachSwipe(document.getElementById("traj-viewer"), function () { return slides[cur]; }, function (dir) { show(cur + dir); });   // drag-following swipe on touch screens
+      attachSwipe(document.getElementById("traj-viewer"), function () { return slides; }, function () { return cur; }, function (dir) { show(cur + dir); });   // drag-following swipe on touch screens
       document.getElementById("traj-prev").addEventListener("click", function () { show(cur - 1); });
       document.getElementById("traj-next").addEventListener("click", function () { show(cur + 1); });
       dots.forEach(function (d) { d.addEventListener("click", function () { show(parseInt(d.getAttribute("data-dot"))); }); });
@@ -237,7 +242,7 @@ window.attachSwipe = function (box, getActive, onSwitch) {
   document.getElementById("gallery-next").addEventListener("click", function () { show(current + 1); });
   dots.forEach(function (d) { d.addEventListener("click", function () { show(parseInt(d.getAttribute("data-dot"))); }); });
   document.addEventListener("keydown", function (e) { if (e.key === "ArrowLeft") show(current - 1); if (e.key === "ArrowRight") show(current + 1); });
-  attachSwipe(document.getElementById("gif-gallery"), function () { return slides[current]; }, function (dir) { show(current + dir); });   // drag-following swipe on touch screens
+  attachSwipe(document.getElementById("gif-gallery"), function () { return slides; }, function () { return current; }, function (dir) { show(current + dir); });   // drag-following swipe on touch screens
   show(0);
 })();
 </script>
