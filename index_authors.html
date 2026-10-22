@@ -25,6 +25,8 @@
     .publication-title i { font-style: italic; }
     .traj-media { display: block; width: 100%; height: 680px; object-fit: contain; background: white; }   /* every episode in the same 680 px box; the tall one (S3) is letterboxed instead of stretching the page */
     .publication-links .link-block { display: inline-block; margin: 0.3rem 0.35rem; }
+    .agent-text p.stage { margin: 0.35rem 0; padding-left: 2em; text-indent: -2em; } .agent-text p.oracles { margin-top: 1.1rem; }
+    .stp { display: inline-block; width: 1.45em; height: 1.45em; border-radius: 50%; background: #F2666D; color: #fff; font-weight: 700; font-size: 0.82em; line-height: 1.45em; text-align: center; margin-right: 0.45em; text-indent: 0; }   /* the figure's coral stage badges */
     .figure-caption { font-size: 0.95rem; color: #4a4a4a; margin-top: 0.6rem; text-align: left; }
     .results-carousel .item { margin: 0 1rem; }
     .maroon { color: #9B1C1C; font-weight: 600; }
@@ -140,8 +142,12 @@
     <h2 class="title is-3 has-text-centered">Neurosymbolic reference agent</h2>
     <div class="columns is-centered is-vcentered">
       <div class="column is-three-fifths"><video autoplay loop muted playsinline poster="static/images/fig2_agent.png" style="width:100%"><source src="static/videos/fig2_agent.mp4" type="video/mp4"><img src="static/gifs/fig2_agent.gif" alt="Neurosymbolic agent" style="width:100%"></video></div>
-      <div class="column is-two-fifths content has-text-justified">
-        <p>The agent parses the instruction into an if/then/else program, resolves one condition at a time with a search-and-verify loop (sweep in place, detect, lift detections into a 3D memory, explore frontiers under a budget), and executes the chosen action. An exhausted budget declares a condition false. Three oracles (resolved branch, condition truths in words, perfect perception) remove one source of difficulty each, so the ablations attribute the remaining cost to evidence acquisition rather than to branch logic.</p>
+      <div class="column is-two-fifths content has-text-left agent-text">
+        <p>The neurosymbolic agent turns one instruction into a program and runs it in three stages:</p>
+        <p class="stage"><span class="stp">1</span><b>Parse.</b> GPT-4.1 rewrites the instruction as an if/then/else program over scene-graph predicates.</p>
+        <p class="stage"><span class="stp">2</span><b>Search and verify.</b> One condition at a time: sweep in place, detect, lift detections into a 3D memory, explore frontiers under a budget. An exhausted budget declares the condition false.</p>
+        <p class="stage"><span class="stp">3</span><b>Execute.</b> Walk to the target the program selects and stop within the success radius.</p>
+        <p class="oracles">Three oracles (resolved branch, condition truths in words, perfect perception) remove one source of difficulty each, so the ablations attribute the remaining cost to evidence acquisition rather than to branch logic.</p>
       </div>
     </div>
   </div>
