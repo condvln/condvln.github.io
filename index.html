@@ -24,6 +24,7 @@
   <style>
     .publication-title i { font-style: italic; }
     .traj-media { display: block; width: 100%; height: 680px; object-fit: contain; background: white; }   /* every episode in the same 680 px box; the tall one (S3) is letterboxed instead of stretching the page */
+    .publication-links .link-block { display: inline-block; margin: 0.3rem 0.35rem; }
     .figure-caption { font-size: 0.95rem; color: #4a4a4a; margin-top: 0.6rem; text-align: left; }
     .results-carousel .item { margin: 0 1rem; }
     .maroon { color: #9B1C1C; font-weight: 600; }
@@ -31,6 +32,7 @@
     .stat-grid .column { display: flex; } .chart-card { background: #fafafa; border-radius: 8px; padding: 0.7rem 0.9rem 0.6rem; width: 100%; display: flex; flex-direction: column; } .chart-title { font-size: 0.9rem; font-weight: 600; color: #4a4a4a; margin-bottom: 0.3rem; }
     .chart-box { position: relative; height: 240px; } .table-card { justify-content: flex-start; } .table-card img { margin: auto 0; } .chart-note { font-size: 0.8rem; color: #6a6a6a; margin-top: 0.4rem; }
     .traj-slide { display: none; } .traj-slide.active { display: block; }
+    .traj-slide .figure-caption { max-width: 900px; margin: 0.6rem auto 0; text-align: center; }   /* same width as the paragraph above the viewer */
     .traj-dot { width: 0.7rem; height: 0.7rem; border-radius: 50%; background: #ccc; cursor: pointer; display: inline-block; } .traj-dot.active { background: #555; }
   </style>
 </head>
@@ -44,7 +46,10 @@
           <h1 class="title is-1 publication-title"><i>If, Then, Otherwise:</i><br>Diagnosing Conditional Branching in Vision-Language Navigation</h1>
           
           <div class="column has-text-centered">
-            <div class="publication-links"><span class="link-block"><a href="static/paper.pdf" class="external-link button is-normal is-rounded is-dark"><span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span></a></span><span class="link-block"><a href="#" class="external-link button is-normal is-rounded is-dark"><span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span></a></span><span class="link-block"><a href="https://anonymous.4open.science/r/condvln_bench/README.md" class="external-link button is-normal is-rounded is-dark"><span class="icon"><i class="fab fa-github"></i></span><span>Code</span></a></span><span class="link-block"><a href="https://anonymous.4open.science/r/condvln_bench/CondVLN_dataset" class="external-link button is-normal is-rounded is-dark"><span class="icon"><i class="fas fa-database"></i></span><span>Dataset</span></a></span></div>
+            <div class="publication-links"><span class="link-block"><a href="static/paper.pdf" class="external-link button is-normal is-rounded is-dark"><span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span></a></span>
+<span class="link-block"><a href="#" class="external-link button is-normal is-rounded is-dark"><span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span></a></span>
+<span class="link-block"><a href="https://anonymous.4open.science/r/condvln_bench/README.md" class="external-link button is-normal is-rounded is-dark"><span class="icon"><i class="fab fa-github"></i></span><span>Code</span></a></span>
+<span class="link-block"><a href="https://anonymous.4open.science/r/condvln_bench/CondVLN_dataset" class="external-link button is-normal is-rounded is-dark"><span class="icon"><i class="fas fa-database"></i></span><span>Dataset</span></a></span></div>
           </div>
         </div>
       </div>
@@ -107,18 +112,20 @@
       scales: { y: { beginAtZero: true, ticks: { font: { size: 10 }, callback: function (v) { return v >= 1000000 ? (v / 1000000) + "M" : v >= 1000 ? (v / 1000) + "k" : v; } } }, x: { ticks: { font: { size: 11 } } } }
     }, opts || {}) });
   }
-  var started = false;
+  var runId = 0;
+  var charts = [];   // rebuilt on every entry so the animation replays each time the section scrolls into view
   function startCharts() {
-    if (started) return; started = true;
-    bar("chart-graph", [ { label: "objects", data: S.objects, backgroundColor: palette[1] }, { label: "spatial relations", data: S.relations, backgroundColor: palette[3], yAxisID: "y2" } ],
+    charts.forEach(function (c) { if (c) c.destroy(); }); charts = [];
+    charts.push(bar("chart-graph", [ { label: "objects", data: S.objects, backgroundColor: palette[1] }, { label: "spatial relations", data: S.relations, backgroundColor: palette[3], yAxisID: "y2" } ],
         { scales: { y: { beginAtZero: true, position: "left", title: { display: true, text: "objects", font: { size: 10 } }, ticks: { font: { size: 10 }, callback: function (v) { return v >= 1000 ? (v / 1000) + "k" : v; } } },
-                      y2: { beginAtZero: true, position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "relations", font: { size: 10 } }, ticks: { font: { size: 10 }, callback: function (v) { return v >= 1000000 ? (v / 1000000) + "M" : (v / 1000) + "k"; } } } } });
-    bar("chart-episodes", [ { label: "generated instructions", data: S.instructions, backgroundColor: palette[0] }, { label: "verified episodes", data: S.episodes, backgroundColor: palette[2] } ]);
-    bar("chart-path", [ { label: "mean reference path (m)", data: S.path_m, backgroundColor: palette[3] } ], { plugins: { legend: { display: false } } });
+                      y2: { beginAtZero: true, position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "relations", font: { size: 10 } }, ticks: { font: { size: 10 }, callback: function (v) { return v >= 1000000 ? (v / 1000000) + "M" : (v / 1000) + "k"; } } } } }));
+    charts.push(bar("chart-episodes", [ { label: "generated instructions", data: S.instructions, backgroundColor: palette[0] }, { label: "verified episodes", data: S.episodes, backgroundColor: palette[2] } ]));
+    charts.push(bar("chart-path", [ { label: "mean reference path (m)", data: S.path_m, backgroundColor: palette[3] } ], { plugins: { legend: { display: false } } }));
+    var run = ++runId;
     document.querySelectorAll(".stat-number").forEach(function (el) {
       var target = el.getAttribute("data-target"), m = target.match(/^([\d.,]+)(M?)$/); if (!m) { el.textContent = target; return; }
       var num = parseFloat(m[1].replace(/,/g, "")), suffix = m[2], dec = (m[1].split(".")[1] || "").length, t0 = null;
-      function step(ts) { if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / 1600); var e = 1 - Math.pow(1 - p, 3); var v = num * e;
+      function step(ts) { if (run !== runId) return; if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / 1600); var e = 1 - Math.pow(1 - p, 3); var v = num * e;
         el.textContent = (dec ? v.toFixed(dec) : Math.round(v).toLocaleString("en-US")) + suffix; if (p < 1) requestAnimationFrame(step); else el.textContent = target; }
       requestAnimationFrame(step);
     });
@@ -131,7 +138,7 @@
 <section class="section">
   <div class="container is-max-desktop">
     <h2 class="title is-3 has-text-centered">Neurosymbolic reference agent</h2>
-    <div class="columns is-centered">
+    <div class="columns is-centered is-vcentered">
       <div class="column is-three-fifths"><video autoplay loop muted playsinline poster="static/images/fig2_agent.png" style="width:100%"><source src="static/videos/fig2_agent.mp4" type="video/mp4"><img src="static/gifs/fig2_agent.gif" alt="Neurosymbolic agent" style="width:100%"></video></div>
       <div class="column is-two-fifths content has-text-justified">
         <p>The agent parses the instruction into an if/then/else program, resolves one condition at a time with a search-and-verify loop (sweep in place, detect, lift detections into a 3D memory, explore frontiers under a budget), and executes the chosen action. An exhausted budget declares a condition false. Three oracles (resolved branch, condition truths in words, perfect perception) remove one source of difficulty each, so the ablations attribute the remaining cost to evidence acquisition rather than to branch logic.</p>
