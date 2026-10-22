@@ -195,7 +195,8 @@ window.attachSwipe = function (box, slidesFn, indexFn, onSwitch) {
     <script>
     (function () {
       var n = 4, cur = 0, slides = document.querySelectorAll(".traj-slide"), dots = document.querySelectorAll(".traj-dot"), label = document.getElementById("traj-label");
-      function show(i) { var pv = slides[cur].querySelector("video"); if (pv) pv.pause(); slides[cur].classList.remove("active"); dots[cur].classList.remove("active"); cur = (i + n) % n; slides[cur].classList.add("active"); dots[cur].classList.add("active"); label.textContent = "Episode " + (cur + 1) + " of " + n; var v = slides[cur].querySelector("video"); if (v) { if (!v.getAttribute("src")) v.src = v.getAttribute("data-src"); v.currentTime = 0; v.play().catch(function () {}); } }
+      function show(i) { var pv = slides[cur].querySelector("video"); if (pv) pv.pause(); slides[cur].classList.remove("active"); dots[cur].classList.remove("active"); cur = (i + n) % n; slides[cur].classList.add("active"); dots[cur].classList.add("active"); label.textContent = "Episode " + (cur + 1) + " of " + n; var v = slides[cur].querySelector("video"); if (v) { if (!v.getAttribute("src")) v.src = v.getAttribute("data-src"); v.currentTime = 0; v.play().catch(function () {}); }
+        [slides[(cur + 1) % n], slides[(cur + n - 1) % n]].forEach(function (sl) { var nv = sl.querySelector("video[data-src]"); if (nv && !nv.getAttribute("src")) { nv.preload = "auto"; nv.src = nv.getAttribute("data-src"); nv.load(); } }); }
       attachSwipe(document.getElementById("traj-viewer"), function () { return slides; }, function () { return cur; }, function (dir) { show(cur + dir); });   // drag-following swipe on touch screens
       document.getElementById("traj-prev").addEventListener("click", function () { show(cur - 1); });
       document.getElementById("traj-next").addEventListener("click", function () { show(cur + 1); });
@@ -237,7 +238,9 @@ window.attachSwipe = function (box, slidesFn, indexFn, onSwitch) {
   var slides = document.querySelectorAll(".gallery-slide"), dots = document.querySelectorAll(".gallery-dot"), label = document.getElementById("gallery-label");
   function loadVideos(sl) { sl.querySelectorAll("video[data-src]").forEach(function (v) { if (!v.getAttribute("src")) { v.src = v.getAttribute("data-src"); } v.play().catch(function () {}); }); }
   function pauseVideos(sl) { sl.querySelectorAll("video").forEach(function (v) { v.pause(); }); }
-  function show(i) { pauseVideos(slides[current]); slides[current].classList.remove("active"); dots[current].classList.remove("active"); current = (i + names.length) % names.length; slides[current].classList.add("active"); dots[current].classList.add("active"); label.textContent = names[current]; loadVideos(slides[current]); }
+  function warm(sl) { sl.querySelectorAll("video[data-src]").forEach(function (v) { if (!v.getAttribute("src")) { v.preload = "auto"; v.src = v.getAttribute("data-src"); v.load(); } }); }
+  function show(i) { pauseVideos(slides[current]); slides[current].classList.remove("active"); dots[current].classList.remove("active"); current = (i + names.length) % names.length; slides[current].classList.add("active"); dots[current].classList.add("active"); label.textContent = names[current]; loadVideos(slides[current]);
+    warm(slides[(current + 1) % names.length]); if (current > 0) warm(slides[current - 1]); }
   document.getElementById("gallery-prev").addEventListener("click", function () { show(current - 1); });
   document.getElementById("gallery-next").addEventListener("click", function () { show(current + 1); });
   dots.forEach(function (d) { d.addEventListener("click", function () { show(parseInt(d.getAttribute("data-dot"))); }); });
