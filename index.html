@@ -20,7 +20,7 @@
     .traj-media { display: block; width: 100%; height: 680px; object-fit: contain; background: white; }   /* every episode in the same 680 px box; the tall one (S3) is letterboxed instead of stretching the page */
     @media (max-width: 768px) { .traj-media { height: auto; max-height: 72vh; } .traj-slide .figure-caption { margin-top: 0.3rem; } }   /* phones: no fixed box, so no empty bands above and below the video */
     .publication-links .link-block { display: inline-block; margin: 0.3rem 0.35rem; }
-    .agent-text p.stage { margin: 0.35rem 0; padding-left: 2em; text-indent: -2em; } .agent-text p.oracles { margin-top: 1.1rem; }
+    .agent-text p.stage { margin: 0.35rem 0; padding-left: 2em; text-indent: -2em; } .agent-text p.stage-map { margin: 0 0 0.6rem 2em; color: #52606D; font-size: 0.95em; } .agent-text p.oracles { margin-top: 1.1rem; }
     .stp { display: inline-block; width: 1.45em; height: 1.45em; border-radius: 50%; background: #F2666D; color: #fff; font-weight: 700; font-size: 0.82em; line-height: 1.45em; text-align: center; margin-right: 0.45em; text-indent: 0; }   /* the figure's coral stage badges */
     .tldr { display: flex; gap: 1rem; align-items: flex-start; background: #F1F3F5; border-radius: 10px; padding: 1rem 1.3rem; max-width: 860px; margin: 1.5rem auto 0; text-align: left; }
     .tldr-tag { font-weight: 700; color: #7C5CE6; letter-spacing: 0.02em; white-space: nowrap; margin-top: 0.1rem; } .tldr p { margin: 0; font-size: 1.05rem; line-height: 1.55; color: #363636; }
@@ -175,7 +175,9 @@ window.attachSwipe = function (box, slidesFn, indexFn, onSwitch) {
         <p>The neurosymbolic agent turns one instruction into a program and runs it in three stages:</p>
         <p class="stage"><span class="stp">1</span><b>Parse.</b> GPT-4.1 rewrites the instruction as an if/then/else program over scene-graph predicates.</p>
         <p class="stage"><span class="stp">2</span><b>Search and verify.</b> One condition at a time: sweep in place, detect, lift detections into a 3D memory, explore frontiers under a budget. An exhausted budget declares the condition false.</p>
+        <p class="stage-map"><i>On the map: the agent sweeps the kitchen for a coffee table, finds none before the budget runs out, and marks the condition false.</i></p>
         <p class="stage"><span class="stp">3</span><b>Execute.</b> Walk to the target the program selects and stop within the success radius.</p>
+        <p class="stage-map"><i>On the map: with the condition false, the program selects the else branch, and the agent walks to the light in the bathroom.</i></p>
         <p class="oracles">Three oracles (resolved branch, condition truths in words, perfect perception) remove one source of difficulty each, so the ablations attribute the remaining cost to evidence acquisition rather than to branch logic.</p>
       </div>
     </div>
