@@ -31,9 +31,24 @@
     .maroon { color: #9B1C1C; font-weight: 600; }
     .stat-row .column { min-width: 9rem; } .stat-number { font-size: 2.2rem; font-weight: 700; color: #363636; font-family: "Google Sans", "Noto Sans", sans-serif; line-height: 1.1; } .stat-label { font-size: 0.9rem; color: #6a6a6a; }
     .stat-grid .column { display: flex; } .chart-card { background: #fafafa; border-radius: 8px; padding: 0.7rem 0.9rem 0.6rem; width: 100%; display: flex; flex-direction: column; } .chart-title { font-size: 0.9rem; font-weight: 600; color: #4a4a4a; margin-bottom: 0.3rem; }
-    .chart-box { position: relative; height: 240px; } .table-card { justify-content: flex-start; } .table-card img { margin: auto 0; } .chart-note { font-size: 0.8rem; color: #6a6a6a; margin-top: 0.4rem; }
+    .chart-box { position: relative; height: 240px; } .table-card { justify-content: flex-start; } .table-card .ptable-wrap { margin: 0.2rem 0 auto; } .chart-note { font-size: 0.8rem; color: #6a6a6a; margin-top: 0.4rem; }
     .traj-slide { display: none; } .traj-slide.active { display: block; }
     .traj-slide .figure-caption { max-width: 900px; margin: 0.6rem auto 0; text-align: center; }   /* same width as the paragraph above the viewer */
+
+    .ptable-wrap { overflow-x: auto; width: 100%; }
+    .ptable { border-collapse: collapse; width: 100%; font-size: 0.82rem; line-height: 1.25; color: #222; font-family: "Noto Sans", "Google Sans", sans-serif; }
+    .ptable tr > th, .ptable tr > td { padding: 0.22rem 0.35rem; text-align: center; white-space: nowrap; border: 0; vertical-align: middle; }
+    .ptable tr > th { font-weight: 600; }
+    .ptable tr > .lcol { text-align: left; }
+    .ptable tr.rule-top > * { border-top: 1.5px solid #333; }
+    .ptable tr.head-last > * { border-bottom: 1px solid #333; }
+    .ptable tr.rule-mid > * { border-top: 1px solid #333; }
+    .ptable tr.rule-bottom > * { border-bottom: 1.5px solid #333; }
+    .ptable tr > th.cmid { border-bottom: 1px solid #999; }
+    .ptable tr > td.best { background: #FFB2B2; } .ptable tr > td.second { background: #FFD9B2; } .ptable tr > td.third { background: #FFFFB2; }
+    .ptable-legend { font-size: 0.8rem; color: #555; margin-top: 0.35rem; } .ptable-legend .sw { display: inline-block; width: 0.9em; height: 0.9em; vertical-align: -0.1em; margin: 0 0.25em 0 0.6em; border: 1px solid #bbb; }
+    .ptable.compact { font-size: 0.78rem; } .ptable.compact tr > th, .ptable.compact tr > td { padding: 0.24rem 0.3rem; } .ptable.compact tr > td.lcol { white-space: normal; }
+
     .traj-dot { width: 0.7rem; height: 0.7rem; border-radius: 50%; background: #ccc; cursor: pointer; display: inline-block; } .traj-dot.active { background: #555; }
   </style>
 </head>
@@ -114,7 +129,7 @@ window.attachSwipe = function (box, slidesFn, indexFn, onSwitch) {
 <section class="section">
   <div class="container is-max-desktop">
     <h2 class="title is-3 has-text-centered">Benchmark</h2>
-    <img src="static/images/fig1_framework.png" alt="CondVLN framework" style="width:100%">
+    <video autoplay loop muted playsinline poster="static/images/fig1_framework.png" style="width:100%"><source src="static/videos/fig1_framework.mp4" type="video/mp4"><img src="static/images/fig1_framework.png" alt="CondVLN framework" style="width:100%"></video>
     <p class="figure-caption">Instructions are generated from 3D scene graphs: every condition is a scene-graph predicate whose truth is known by construction, conditions decide the destination, and they are composed through controlled nesting depth and chain length. Agents receive camera observations and the instruction text only. Branch Selection Accuracy (BSA) credits the condition objects an agent reaches in the order the instruction checks them; Conditional Success Rate (CSR) requires the goal and the full branch.</p>
   </div>
 </section>
@@ -124,7 +139,17 @@ window.attachSwipe = function (box, slidesFn, indexFn, onSwitch) {
     <h2 class="title is-3 has-text-centered">Benchmark statistics</h2>
     <div class="columns is-multiline is-mobile stat-row"><div class="column has-text-centered"><p class="stat-number" data-target="19,952">0</p><p class="stat-label">generated instructions</p></div><div class="column has-text-centered"><p class="stat-number" data-target="1,998">0</p><p class="stat-label">verified episodes</p></div><div class="column has-text-centered"><p class="stat-number" data-target="34,062">0</p><p class="stat-label">objects</p></div><div class="column has-text-centered"><p class="stat-number" data-target="1.88M">0</p><p class="stat-label">spatial relations</p></div><div class="column has-text-centered"><p class="stat-number" data-target="371">0</p><p class="stat-label">scenes</p></div><div class="column has-text-centered"><p class="stat-number" data-target="6">0</p><p class="stat-label">complexity categories</p></div></div>
     <div class="columns is-multiline stat-grid" style="margin-top:1rem">
-      <div class="column is-half"><div class="chart-card table-card"><p class="chart-title">Benchmark statistics (Table 2 of the paper)</p><img src="static/images/table2_stats.png" alt="Benchmark statistics table" style="width:100%"></div></div>
+      <div class="column is-half"><div class="chart-card table-card"><p class="chart-title">Benchmark statistics (Table 2 of the paper)</p><div class="ptable-wrap"><table class="ptable compact">
+<tr class="rule-top head-last"><th class="lcol">&nbsp;</th><th>ReplicaCAD</th><th>AI2-THOR</th><th>Gibson</th><th>MP3D</th><th>Total</th></tr>
+<tr class="rule-mid"><td class="lcol">Scenes</td><td>91</td><td>85</td><td>105</td><td>90</td><td>371</td></tr>
+<tr><td class="lcol">Objects</td><td>2,293</td><td>4,003</td><td>7,487</td><td>20,279</td><td>34,062</td></tr>
+<tr><td class="lcol">Object categories</td><td>41</td><td>127</td><td>55</td><td>146</td><td>274</td></tr>
+<tr><td class="lcol">Spatial relations</td><td>255,529</td><td>560,219</td><td>146,685</td><td>918,059</td><td>1,880,492</td></tr>
+<tr><td class="lcol">Generated instructions</td><td>3,549</td><td>5,100</td><td>6,283</td><td>5,020</td><td>19,952</td></tr>
+<tr class="rule-mid"><td class="lcol">Verified episodes</td><td>500</td><td>500</td><td>499</td><td>499</td><td>1,998</td></tr>
+<tr><td class="lcol">Mean reference path (m)</td><td>10.0</td><td>9.9</td><td>22.5</td><td>33.5</td><td>19.0</td></tr>
+<tr class="rule-bottom"><td class="lcol">Episodes with subgoals</td><td>66%</td><td>69%</td><td>67%</td><td>66%</td><td>67%</td></tr>
+</table></div></div></div>
       <div class="column is-half"><div class="chart-card"><p class="chart-title">Scene-graph size per environment</p><div class="chart-box"><canvas id="chart-graph"></canvas></div></div></div>
       <div class="column is-half"><div class="chart-card"><p class="chart-title">Instructions and verified episodes per environment</p><div class="chart-box"><canvas id="chart-episodes"></canvas></div></div></div>
       <div class="column is-half"><div class="chart-card"><p class="chart-title">Mean reference path length (m)</p><div class="chart-box"><canvas id="chart-path"></canvas></div></div></div>
@@ -255,9 +280,35 @@ window.attachSwipe = function (box, slidesFn, indexFn, onSwitch) {
 <section class="section">
   <div class="container is-max-desktop">
     <h2 class="title is-3 has-text-centered">Main results</h2>
-    <img src="static/images/table3_main_results.png" alt="Main results table" style="width:100%">
+    <div class="ptable-wrap"><table class="ptable">
+<tr class="rule-top"><th rowspan="2" class="lcol">Model</th><th colspan="4" class="cmid">ReplicaCAD</th><th colspan="4" class="cmid">AI2-THOR</th><th colspan="4" class="cmid">Gibson</th><th colspan="4" class="cmid">Matterport3D</th></tr>
+<tr class="head-last"><th>SR</th><th>SPL</th><th>BSA</th><th>CSR</th><th>SR</th><th>SPL</th><th>BSA</th><th>CSR</th><th>SR</th><th>SPL</th><th>BSA</th><th>CSR</th><th>SR</th><th>SPL</th><th>BSA</th><th>CSR</th></tr>
+<tr class="rule-mid"><td class="lcol">NaVid</td><td>0.4</td><td>0.1</td><td>11.9</td><td>0.0</td><td>2.0</td><td>1.4</td><td>14.0</td><td>0.8</td><td>2.0</td><td>1.0</td><td>11.0</td><td>0.8</td><td>0.8</td><td>0.5</td><td class="third">7.6</td><td>0.4</td></tr>
+<tr><td class="lcol">NaVILA</td><td>1.0</td><td>0.6</td><td>11.2</td><td>0.6</td><td>5.0</td><td>2.8</td><td>25.3</td><td>3.4</td><td>2.8</td><td class="third">2.0</td><td>7.0</td><td>1.4</td><td class="second">2.6</td><td class="best">1.8</td><td>5.4</td><td>0.4</td></tr>
+<tr><td class="lcol">CA-Nav</td><td>0.6</td><td>0.5</td><td>12.0</td><td>0.4</td><td>2.2</td><td>1.5</td><td>14.1</td><td>1.2</td><td>1.0</td><td>0.5</td><td>6.1</td><td>0.6</td><td>1.0</td><td>0.4</td><td>4.7</td><td class="third">0.8</td></tr>
+<tr><td class="lcol">Open-Nav</td><td>0.6</td><td>0.3</td><td>11.8</td><td>0.4</td><td class="third">5.8</td><td>2.9</td><td class="third">25.6</td><td class="third">4.0</td><td>2.4</td><td>1.7</td><td>8.7</td><td>1.4</td><td class="third">2.4</td><td>1.1</td><td>6.6</td><td class="third">0.8</td></tr>
+<tr><td class="lcol">VLN-Zero<sup>&dagger;</sup></td><td>0.4</td><td>0.4</td><td>9.7</td><td>0.2</td><td>1.6</td><td>1.1</td><td>16.1</td><td>0.8</td><td>0.8</td><td>0.8</td><td>4.7</td><td>0.2</td><td>0.4</td><td>0.4</td><td>3.0</td><td>0.2</td></tr>
+<tr><td class="lcol">StreamVLN</td><td>0.8</td><td>0.3</td><td>14.8</td><td>0.2</td><td>5.2</td><td class="third">3.8</td><td>19.9</td><td>2.4</td><td class="second">4.8</td><td class="best">3.8</td><td class="third">11.6</td><td class="third">2.6</td><td>2.0</td><td class="second">1.7</td><td>5.2</td><td>0.6</td></tr>
+<tr><td class="lcol">SNav-7B</td><td class="third">1.2</td><td class="third">1.1</td><td class="third">16.2</td><td class="third">0.8</td><td class="third">5.8</td><td>2.2</td><td>18.1</td><td>2.4</td><td>3.8</td><td class="second">3.0</td><td>10.8</td><td>2.2</td><td>1.4</td><td class="third">1.3</td><td>7.4</td><td>0.6</td></tr>
+<tr class="rule-mid"><td class="lcol">Trained policy (ours)</td><td class="second">5.8</td><td class="second">2.3</td><td class="second">31.4</td><td class="second">3.8</td><td class="second">13.6</td><td class="second">4.4</td><td class="second">57.6</td><td class="second">9.6</td><td class="third">4.4</td><td>0.9</td><td class="second">26.3</td><td class="second">2.8</td><td>2.2</td><td>1.0</td><td class="second">17.5</td><td class="second">1.0</td></tr>
+<tr class="rule-bottom"><td class="lcol">Neurosymbolic agent (ours)</td><td class="best">34.4</td><td class="best">5.3</td><td class="best">71.6</td><td class="best">27.4</td><td class="best">31.6</td><td class="best">5.0</td><td class="best">75.5</td><td class="best">28.0</td><td class="best">8.0</td><td>1.5</td><td class="best">28.9</td><td class="best">5.8</td><td class="best">3.4</td><td>0.5</td><td class="best">21.2</td><td class="best">2.6</td></tr>
+</table></div>
+    <p class="ptable-legend">Shading per column:<span class="sw" style="background:#FFB2B2"></span>best<span class="sw" style="background:#FFD9B2"></span>second<span class="sw" style="background:#FFFFB2"></span>third. VLN-Zero<sup>&dagger;</sup>: goal marker, distance readout and map crop removed.</p>
     <p class="figure-caption">Table 3. Seven VLN agents reach the named object in a few percent of episodes, and most of their successes on branching episodes bypass the required branch. The neurosymbolic agent leads every column except SPL on the two real-scan environments.</p>
-    <div class="columns is-centered" style="margin-top:1.5rem"><div class="column is-three-fifths"><img src="static/images/table4_scaling.png" alt="Scaling analysis table" style="width:100%"><p class="figure-caption">Table 4. Branch selection accuracy and conditional success rate per complexity cell: the baselines show no trend over depth or chain length because they rarely reach the named target with either instruction, while the neurosymbolic agent keeps its BSA within a seven-point band as the logic deepens.</p></div></div>
+    <div class="columns is-centered" style="margin-top:1.5rem"><div class="column is-four-fifths"><div class="ptable-wrap"><table class="ptable">
+<tr class="rule-top"><th rowspan="3" class="lcol">Model</th><th colspan="2" class="cmid">Base</th><th colspan="4" class="cmid">Logical Depth Sweep</th><th colspan="4" class="cmid">Chain Length Sweep</th></tr>
+<tr><th colspan="2" class="cmid"><i>d=1,&thinsp;&#8467;=1</i></th><th colspan="2" class="cmid"><i>d=2,&thinsp;&#8467;=1</i></th><th colspan="2" class="cmid"><i>d=3,&thinsp;&#8467;=1</i></th><th colspan="2" class="cmid"><i>d=1,&thinsp;&#8467;=2</i></th><th colspan="2" class="cmid"><i>d=1,&thinsp;&#8467;=3</i></th></tr>
+<tr class="head-last"><th>BSA</th><th>CSR</th><th>BSA</th><th>CSR</th><th>BSA</th><th>CSR</th><th>BSA</th><th>CSR</th><th>BSA</th><th>CSR</th></tr>
+<tr class="rule-mid"><td class="lcol">NaVid</td><td>9.04</td><td>0.30</td><td>9.04</td><td>0.90</td><td>12.13</td><td>0.90</td><td>10.71</td><td>0.00</td><td>15.06</td><td>0.00</td></tr>
+<tr><td class="lcol">NaVILA</td><td>11.14</td><td>2.11</td><td>8.89</td><td class="third">2.11</td><td>11.43</td><td>0.60</td><td>14.88</td><td>1.49</td><td>15.06</td><td>1.20</td></tr>
+<tr><td class="lcol">CA-Nav</td><td>9.34</td><td>1.81</td><td>7.08</td><td>0.60</td><td>8.68</td><td>0.30</td><td>11.31</td><td>0.89</td><td>12.35</td><td>0.60</td></tr>
+<tr><td class="lcol">Open-Nav</td><td>12.95</td><td>3.01</td><td>8.58</td><td>0.60</td><td>11.48</td><td>0.60</td><td>15.77</td><td class="third">2.08</td><td class="third">18.98</td><td class="third">2.71</td></tr>
+<tr><td class="lcol">VLN-Zero<sup>&dagger;</sup></td><td>7.83</td><td>1.20</td><td>6.02</td><td>0.00</td><td>8.03</td><td>0.00</td><td>11.31</td><td>0.30</td><td>11.45</td><td>0.60</td></tr>
+<tr><td class="lcol">StreamVLN</td><td>9.34</td><td>1.51</td><td class="third">9.64</td><td>1.20</td><td class="third">15.27</td><td>1.20</td><td>13.99</td><td>1.79</td><td>17.77</td><td>1.51</td></tr>
+<tr><td class="lcol">SNav-7B</td><td class="third">14.76</td><td class="third">3.31</td><td>9.49</td><td>0.30</td><td>13.32</td><td class="second">2.40</td><td class="third">16.37</td><td>1.79</td><td>15.96</td><td>0.90</td></tr>
+<tr class="rule-mid"><td class="lcol">Trained policy (ours)</td><td class="second">35.24</td><td class="second">6.93</td><td class="second">28.01</td><td class="second">3.01</td><td class="second">31.19</td><td class="third">1.80</td><td class="second">35.12</td><td class="second">5.06</td><td class="second">39.46</td><td class="second">3.61</td></tr>
+<tr class="rule-bottom"><td class="lcol">Neurosymbolic agent (ours)</td><td class="best">46.99</td><td class="best">19.58</td><td class="best">48.34</td><td class="best">15.96</td><td class="best">47.11</td><td class="best">15.57</td><td class="best">53.57</td><td class="best">15.77</td><td class="best">50.90</td><td class="best">13.86</td></tr>
+</table></div><p class="figure-caption">Table 4. Branch selection accuracy and conditional success rate per complexity cell: the baselines show no trend over depth or chain length because they rarely reach the named target with either instruction, while the neurosymbolic agent keeps its BSA within a seven-point band as the logic deepens.</p></div></div>
   </div>
 </section>
 
