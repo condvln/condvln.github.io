@@ -17,7 +17,7 @@
   <script defer src="static/js/fontawesome.all.min.js"></script>
   <style>
     .publication-title i { font-style: italic; }
-    .traj-media { display: block; width: 100%; height: 680px; object-fit: contain; background: white; }   /* every episode in the same 680 px box; the tall one (S3) is letterboxed instead of stretching the page */
+    .traj-media { display: block; width: 100%; height: min(960px, 92vh); object-fit: contain; background: white; }   /* every episode in one box; 960 px tall (user 2026-10-27: the tall Gibson figures were too small at 680 px), so the 3 x 3 figures show at 680 to 1140 px wide */
     @media (max-width: 768px) { .traj-media { height: auto; max-height: 72vh; } .traj-slide .figure-caption { margin-top: 0.3rem; } }   /* phones: no fixed box, so no empty bands above and below the video */
     .publication-links .link-block { display: inline-block; margin: 0.3rem 0.35rem; }
     .agent-text p.stage { margin: 0.35rem 0; padding-left: 2em; text-indent: -2em; } .agent-text p.stage-map { margin: 0.3rem 0 0.7rem 2em; padding: 0.5em 0.75em; background: #F1F3F5; border-radius: 8px; color: #52606D; font-size: 0.95em; }
