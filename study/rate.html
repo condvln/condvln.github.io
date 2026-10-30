@@ -20,13 +20,15 @@ const $ = h => { document.getElementById('app').innerHTML = h; };
 function save(){ const obj={annotator:S.who, finished:new Date().toISOString(), responses:ITEMS.map(x=>Object.assign({id:x.id,block:x.block}, S.A[x.id]||{}))};
   const url=URL.createObjectURL(new Blob([JSON.stringify(obj,null,1)],{type:'application/json'}));
   $(`<h2>Done, and thank you</h2><div class=card><p>Download your responses and send the file back.</p><p><a href="${url}" download="condvln_v2_${S.who.replace(/\W/g,'_')}.json"><button class=primary>Download responses</button></a></p></div>`); }
+const INTRO = {A:['Rate one instruction.','How natural it sounds as something a person would say, and how clear it is where to go.'],
+               B:['Compare two instructions.','Whether they send the robot to the same place in every situation.'],
+               C:['Pick the destination.','Given a few facts about the house, which object the instruction sends the robot to. Everything needed is in the facts shown.']};
+function introList(who){ const ord = who ? blockOrder(who) : ['A','B','C']; return ord.map((b,i)=>`<p><b>Part ${i+1}. ${INTRO[b][0]}</b> ${INTRO[b][1]}</p>`).join('') + (who ? '' : '<p class=hint>The order of the parts is set once you enter your initials below.</p>'); }
 function intro(){ $(`<h2>CondVLN instruction study</h2><div class=sub>${ITEMS.length} short items in three parts, one part at a time. About 100 minutes; you can pause, nothing is timed, and Back works.</div>
 <div class=card><p>You will read navigation instructions written for a robot in a house. The study has three parts, each with its own short instructions; within a part the items are in random order:</p>
-<p><b>Rate one instruction.</b> How natural it sounds as something a person would say, and how clear it is where to go.</p>
-<p><b>Compare two instructions.</b> Whether they send the robot to the same place in every situation.</p>
-<p><b>Pick the destination.</b> Given a few facts about the house, which object the instruction sends the robot to. Everything needed is in the facts shown.</p>
+<div id=parts>${introList("")}</div>
 <p class=hint>No map or scene is shown; judge the language only. Your responses download as a file at the end, nothing is uploaded automatically; please send that file to the person who gave you this link.</p>
-<div class=q>Your name or initials</div><input type=text id=who placeholder="e.g. JS" style="width:260px"><p><button class=primary onclick="start()" >Begin</button></p></div>`); }
+<div class=q>Your name or initials</div><input type=text id=who placeholder="e.g. JS" style="width:260px" oninput="document.getElementById('parts').innerHTML=introList(this.value.trim())"><p><button class=primary onclick="start()" >Begin</button></p></div>`); }
 const PART = {A:{title:'Rate one instruction', text:'Each item shows one instruction. Rate how natural it sounds as something a person would say, and how clear it is where to go. There are no right answers; go with your first impression.'},
               B:{title:'Compare two instructions', text:'Each item shows two instructions. Decide whether they send the robot to the same place in every situation, whatever is or is not in the house. If not, or if one can be read in two ways, say in one line which situation differs.'},
               C:{title:'Pick the destination', text:'Each item shows an instruction and a few facts about the house. Choose the object the instruction sends the robot to under those facts. Everything you need is in the facts; tick the box if the instruction allowed another reading.'}};
