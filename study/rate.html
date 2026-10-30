@@ -34,7 +34,10 @@ function hashStr(t){let h=0;for(const c of t){h=(h*31+c.charCodeAt(0))>>>0}retur
 function blockOrder(who){ const perms=[['A','B','C'],['A','C','B'],['B','A','C'],['B','C','A'],['C','A','B'],['C','B','A']]; return perms[hashStr(who.toLowerCase())%6]; }   // part order fixed per rater, balanced across raters
 function build(who){ const o=[]; let n=1; for(const b of blockOrder(who)){ o.push({part:b, n:n++, block:b}); for(const it of shuffle(ITEMS.filter(x=>x.block==b))) o.push(it); } return o; }
 function start(){ const v=document.getElementById('who').value.trim(); if(!v){alert('Please enter a name or initials.');return} S.who=v; ORDER=build(v); S.i=0; render(); }
-function head(){ const done=ORDER.slice(0,S.i).filter(x=>!x.part).length, tot=ORDER.filter(x=>!x.part).length; return `<h2>Item ${done+1} of ${tot}</h2><div class=bar><div style="width:${Math.round(done/tot*100)}%"></div></div>`; }
+function head(){ const it=ORDER[S.i], b=it.block, pn=(ORDER.find(x=>x.part==b)||{}).n||'';
+  const inPart=ORDER.filter(x=>x.block==b&&!x.part).length, donePart=ORDER.slice(0,S.i).filter(x=>x.block==b&&!x.part).length;
+  const tot=ORDER.filter(x=>!x.part).length, done=ORDER.slice(0,S.i).filter(x=>!x.part).length;
+  return `<div class=sub style="margin-bottom:4px">Part ${pn} of 3: ${PART[b].title}</div><h2>Item ${donePart+1} of ${inPart} in this part</h2><div class=sub style="margin:2px 0 0">${inPart-donePart-1} left in this part &middot; ${tot-done-1} left in total</div><div class=bar><div style="width:${Math.round(done/tot*100)}%"></div></div>`; }
 function nav(){ return `<p><button onclick="S.i--;render()" ${S.i?'':'disabled'}>Back</button> <button class=primary onclick="next()">Next</button></p>`; }
 function render(){ const it=ORDER[S.i]; if(!it) return save();
   if(it.part){ const p=PART[it.part], cnt=ORDER.filter(x=>x.block==it.part&&!x.part).length; $(`<h2>Part ${it.n} of 3: ${p.title}</h2><div class=card><p>${p.text}</p><p class=hint>${cnt} items in this part.</p><p><button onclick="S.i--;render()" ${S.i?'':'disabled'}>Back</button> <button class=primary onclick="S.i++;render()">Start part ${it.n}</button></p></div>`); return; }
