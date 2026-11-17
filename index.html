@@ -6,20 +6,21 @@
   <meta name="keywords" content="CondVLN, vision-language navigation, conditional instructions, benchmark">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>If, Then, Otherwise: Diagnosing Conditional Branching in Vision-Language Navigation</title>
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link href="static/css/fonts-local.css" rel="stylesheet">
   <link rel="stylesheet" href="static/css/bulma.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/academicons.min.css">
   <link rel="stylesheet" href="static/css/index.css">
   <link rel="icon" type="image/png" sizes="256x256" href="static/images/favicon.png?v=1792701872">
   <link rel="icon" type="image/png" sizes="32x32" href="static/images/favicon-32.png?v=1792701872">
   <link rel="apple-touch-icon" sizes="180x180" href="static/images/favicon-180.png?v=1792701872">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="static/js/jquery.min.js"></script>
   <script defer src="static/js/fontawesome.all.min.js"></script>
   <style>
     .publication-title i { font-style: italic; }
     .traj-media { display: block; width: 100%; height: min(960px, 92vh); object-fit: contain; background: white; }   /* every episode in one box, 960 px tall, so the 3 x 3 figures show at 680 to 1140 px wide */
     @media (max-width: 768px) { .traj-media { height: auto; max-height: 72vh; } .traj-slide .figure-caption { margin-top: 0.3rem; } }   /* phones: no fixed box, so no empty bands above and below the video */
     .publication-links .link-block { display: inline-block; margin: 0.3rem 0.35rem; }
+    .supp-note { font-size: 0.95rem; color: #4a4a4a; margin: 0.9rem auto 0; }
     .agent-text p.stage { margin: 0.35rem 0; padding-left: 2em; text-indent: -2em; } .agent-text p.stage-map { margin: 0.3rem 0 0.7rem 2em; padding: 0.5em 0.75em; background: #F1F3F5; border-radius: 8px; color: #52606D; font-size: 0.95em; }
     .map-chip { display: inline-block; background: #DDE2E7; color: #1F2933; font-weight: 600; font-style: normal; font-size: 0.8em; border-radius: 6px; padding: 0.1em 0.55em; margin-right: 0.45em; vertical-align: 0.05em; }   /* same neutral grey as the MAP card in the figure */ .agent-text p.oracles { margin-top: 1.1rem; }
     .stp { display: inline-block; width: 1.45em; height: 1.45em; border-radius: 50%; background: #F2666D; color: #fff; font-weight: 700; font-size: 0.82em; line-height: 1.45em; text-align: center; margin-right: 0.45em; text-indent: 0; }   /* the figure's coral stage badges */
@@ -94,6 +95,7 @@ window.attachSwipe = function (box, slidesFn, indexFn, onSwitch) {
             <div class="publication-links"><span class="link-block"><a href="#" class="external-link button is-normal is-rounded is-dark"><span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span></a></span>
 <span class="link-block"><a href="https://anonymous.4open.science/r/condvln_bench/README.md" class="external-link button is-normal is-rounded is-dark"><span class="icon"><i class="fab fa-github"></i></span><span>Code</span></a></span>
 <span class="link-block"><a href="https://anonymous.4open.science/r/condvln_bench/CondVLN_dataset" class="external-link button is-normal is-rounded is-dark"><span class="icon"><i class="fas fa-database"></i></span><span>Dataset</span></a></span></div>
+            <p class="supp-note">An offline copy of this page is included in the supplementary material of the submission.</p>
           </div>
           <div class="hero-summary tldr"><span class="tldr-tag">TL;DR</span>
             <p><span class="has-text-weight-semibold">CondVLN</span> is a scene-graph-grounded benchmark for conditional instruction following in vision-language navigation. Its instructions name the goal only through conditions on the scene, so an agent must check each condition, take the branch the scene supports, and only then navigate. Every condition's truth is known by construction, so the benchmark separates verified successes from lucky ones. Our neurosymbolic reference agent does this; seven VLN agents reach the goal in a few percent of episodes, mostly without checking.</p>
@@ -148,7 +150,7 @@ window.attachSwipe = function (box, slidesFn, indexFn, onSwitch) {
 <tr><td class="lcol">Generated instructions</td><td>3,549</td><td>5,100</td><td>6,283</td><td>5,020</td><td>19,952</td></tr>
 <tr class="rule-mid"><td class="lcol">Verified episodes</td><td>500</td><td>500</td><td>499</td><td>499</td><td>1,998</td></tr>
 <tr><td class="lcol">Mean reference path (m)</td><td>10.0</td><td>9.9</td><td>22.5</td><td>33.5</td><td>19.0</td></tr>
-<tr class="rule-bottom"><td class="lcol">Episodes with subgoals</td><td>66%</td><td>69%</td><td>67%</td><td>66%</td><td>67%</td></tr>
+<tr class="rule-bottom"><td class="lcol">Positive-branch episodes</td><td>66%</td><td>69%</td><td>67%</td><td>66%</td><td>67%</td></tr>
 </table></div></div></div>
       <div class="column is-half"><div class="chart-card"><p class="chart-title">Scene-graph size per environment</p><div class="chart-box"><canvas id="chart-graph"></canvas></div></div></div>
       <div class="column is-half"><div class="chart-card"><p class="chart-title">Instructions and verified episodes per environment</p><div class="chart-box"><canvas id="chart-episodes"></canvas></div></div></div>
@@ -157,7 +159,7 @@ window.attachSwipe = function (box, slidesFn, indexFn, onSwitch) {
     <p class="content has-text-centered" style="max-width:900px;margin:1rem auto 0">Instructions are generated from six templates that vary nesting depth (1 to 3) and chain length (1 to 3 branches): simple, nested, deep nested, chain, long chain, nested chain. The released instructions are the templates rewritten into natural language by an open-weight model (Qwen3.8-27B) under a parse-back check that keeps the program of every sentence; the template split is released alongside. The verified evaluation sets are balanced across the six categories. In about two thirds of the episodes the correct branch has a true condition, whose object the agent must visit; in the remaining third every condition is false.</p>
   </div>
 </section>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="static/js/chart.umd.min.js"></script>
 <script>
 (function () {
   var S = {'envs': ['ReplicaCAD', 'AI2-THOR', 'Gibson', 'MP3D'], 'scenes': [91, 85, 105, 90], 'objects': [2293, 4003, 7487, 20279], 'categories': [41, 127, 55, 146], 'relations': [255529, 560219, 146685, 918059], 'instructions': [3549, 5100, 6283, 5020], 'episodes': [500, 500, 499, 499], 'path_m': [10.0, 9.9, 22.5, 33.5], 'subgoal_pct': [66, 69, 67, 66]};
